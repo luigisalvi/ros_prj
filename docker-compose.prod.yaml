@@ -1,0 +1,11 @@
+services:
+  ros2_system: 
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: ros2_container
+    tty: true
+    environment:
+      - DISPLAY
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
