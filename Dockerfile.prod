@@ -1,16 +1,15 @@
-FROM osrf/ros:foxy-desktop
+FROM osrf/ros:jazzy-desktop-full
 
 SHELL ["/bin/bash", "-c"]
 
 WORKDIR /app
 
-# Copia solo il workspace
-COPY ros2_ws /app/ros2_ws
+#COPY ros2_ws /app/ros2_ws
 COPY ros_entrypoint.sh /ros_entrypoint.sh
 
 # Build iniziale del workspace
-RUN source /opt/ros/foxy/setup.bash && \
-    cd /app/ros2_ws && \
+RUN source /opt/ros/jazzy/setup.bash && \
+    #cd /app/ros2_ws && \
     colcon build
 
 # Entrypoint e comando

@@ -18,7 +18,14 @@ def generate_launch_description():
         executable='visualizer_node',
         name='visualizer'
     )
+
+    input_node = Node(
+        package='input_pkg',
+        executable='input_node',
+        name='input'
+    )
     ld.add_action(data_generator_node)
     ld.add_action(pid_controller_node)
     ld.add_action(visualizer_node)
+    ld.add_action(input_node)
     return ld

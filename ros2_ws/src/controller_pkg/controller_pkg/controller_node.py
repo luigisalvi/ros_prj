@@ -12,6 +12,13 @@ class ControllerNode(Node):
             10)
         self.publisher_ = self.create_publisher(Float32, 'correction', 10)
         #self.subscription
+
+        self.setpoint_subscription = self.create_subscription(
+            Float32,
+            'setpoint',
+            self.setpoint_callback,
+            10)
+        
         self.setpoint = 50.0  # Temperaruta di setpoint
         self.kp = 0.1  #P
         self.ki = 0.01 #I
@@ -19,6 +26,10 @@ class ControllerNode(Node):
         self.previous_error = 0.0
         self.integral = 0.0
 
+    def setpoint_callback(self, msg):
+        self.setpoint = msg.data
+        self.get_logger().info(f'Setpoint updated to: {self.setpoint}')
+        
     def listener_callback(self, msg):
         error = self.setpoint - msg.data
         self.integral += error
