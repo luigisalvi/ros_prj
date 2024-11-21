@@ -25,8 +25,8 @@ docker compose -f ./docker-compose.prod.yaml up -d (now works, no differences)
 ## Run input node
 1. open docker container's terminal
 2. type `bash` command
-3. type `cd /app/ros2_ws/src`
-4. do the ROS sourcing by typing `source /opt/ros/jazzy/setup.bash`
-5. type `source install/setup.bash` to install
+3. do the ROS sourcing by typing `source /opt/ros/jazzy/setup.bash`
+4. move to `cd /app/ros2_ws/src`
 5. type `colcon build --packages-select input_pkg --symlink-install` to build input package
-6. type `ros2 run input_pkg input_node` to start the input node
+6. type `source install/setup.bash` to install
+7. type `ros2 run input_pkg input_node` to start the input node
