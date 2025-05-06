@@ -1,7 +1,7 @@
-FROM osrf/ros:jazzy-desktop-full
+FROM osrf/ros:foxy-desktop
 
 
 SHELL ["/bin/bash", "-c"]
 CMD ["bash"]
 
-RUN source /opt/ros/jazzy/setup.bash
+RUN source /opt/ros/foxy/setup.bash
