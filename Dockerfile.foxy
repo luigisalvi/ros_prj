@@ -1,4 +1,4 @@
-FROM ros:foxy
+FROM osrf/ros:foxy-desktop
 
 SHELL ["/bin/bash", "-c"]
 
@@ -8,16 +8,16 @@ COPY ros_entrypoint_deepracer.sh /ros_entrypoint.sh
 
 # Build iniziale del workspace
 RUN sudo apt update && \
-    sudo apt install -y ros-foxy-gazebo-ros-pkgs python3-rosinstall ros-foxy-rviz2 ros-foxy-ros-base ros-foxy-desktop ros-dev-tools
+    sudo apt install -y ros-foxy-gazebo-ros-pkgs python3-rosinstall ros-foxy-rviz2
 
 RUN source /opt/ros/foxy/setup.bash && \
     mkdir -p deepracer_nav2_ws && \
     cd deepracer_nav2_ws && \
     git clone https://github.com/aws-deepracer/aws-deepracer.git && \
     rosdep install -i -r -y --from-paths . && \
-    cd aws-deepracer && \
-    rosinstall deepracer_description && \
-    cd gazebo_ros2_control && git reset --hard 04b2c6f0ff0e977b6fc6af5dfc5e96e5bdd570d0 && cd ..
+    cd aws-deepracer
+
+RUN rosinstall deepracer_description; exit 0
 
 RUN source /opt/ros/foxy/setup.bash && colcon build 
 
