@@ -3,10 +3,32 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: ros2_container
+    container_name: ros2_main_container
     tty: true
     environment:
       - DISPLAY
     volumes:
       - ./ros2_ws:/app/ros2_ws
       - /tmp/.X11-unix:/tmp/.X11-unix
+    command: >
+      bash -c "
+            source /opt/ros/jazzy/setup.bash &&
+            cd /app/ros2_ws &&
+            colcon build --symlink-install &&
+            source install/setup.bash &&
+            ros2 launch bringup_pkg all_nodes.launch.py
+          "  
+  ros2_input:
+      build:
+        context: .
+        dockerfile: Dockerfile.dev
+      container_name: ros2_input_container
+      tty: true
+      environment:
+        - DISPLAY
+      volumes:
+        - ./ros2_ws:/app/ros2_ws
+        - /tmp/.X11-unix:/tmp/.X11-unix
+        
+      depends_on:
+       - ros2_system
