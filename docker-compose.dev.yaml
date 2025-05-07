@@ -1,5 +1,5 @@
 services:
-  ros2_system: 
+  ros2_system-dev: 
     build:
       context: .
       dockerfile: Dockerfile.dev
@@ -18,7 +18,7 @@ services:
             source install/setup.bash &&
             ros2 launch bringup_pkg all_nodes.launch.py
           "  
-  ros2_input:
+  ros2_input-dev:
       build:
         context: .
         dockerfile: Dockerfile.dev

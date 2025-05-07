@@ -1,32 +1,54 @@
-## dev
+# Mobile Robotics Project 2024/2025
 
-docker compose -f ./docker-compose.dev.yaml up -d
+Questo repository ha l'obiettivo di documentare tutto il lavoro effettuato per il progetto di robotica 2.
 
-## prod
+## Prime sperimentazioni
 
-docker compose -f ./docker-compose.prod.yaml up -d (now works, no differences)
+Sono state fatte le prime sperimentazioni di sviluppo con ROS2 in Docker attraverso lo sviluppo di più nodi personalizzati inter-comunicanti. è possibile lanciare il progetto in locale seguendo le indicazioni presenti in [ros2-dev](./dev.md). Questo sottoprogetto comprende un ambiente di sviluppo interativvo con cui è possibile lanciare i nodi, modificare il codice sorgente e fare diverse sperimentazioni.
 
-## Run `ros2` command on container's terminal
+Successivamente è stata studiata la possibilità di erogare un gruppo autonomo di nodi ros2 come servizio containerizzato. il risultato di questa sperimentazione è eseguibile seguendi le indicazioni in [ros2-prod](./prod.md).
 
-1. open docker container's terminal
-2. type `bash` command
-3. do the ROS sourcing by typing `source /opt/ros/jazzy/setup.bash`
-4. `ros2` command is ready to run
+## AWS Deepracer
 
-## Create a new package
+Successivamente è stato studiato l'ecosistema AWS Deepracer.
 
-1. open docker container's terminal
-2. type `bash` command
-3. do the ROS sourcing by typing `source /opt/ros/jazzy/setup.bash`
-4. type `cd /app/ros2_ws/src`
-5. `ros2 pkg create input_pkg --build-type ament_python --dependencies rclpy std_msgs`
-6. `colcon build --packages-select <nome_del_pacchetto> --symlink-install`
+Il veicolo AWS DeepRacer Evo è una piattaforma di sterzo Ackermann a 4 ruote in scala 1/18 con Wi-Fi, dotata di due telecamere RGB e un sensore LiDAR. Questo repository contiene i file di configurazione e di avvio per abilitare lo stack di navigazione ROS su AWS DeepRacer e controllare il veicolo tramite teleop-twist-keyboard, insieme ai componenti principali per integrare AWS DeepRacer con lo stack di navigazione ROS. Per informazioni dettagliate, consultare [Introduzione allo stack di navigazione ROS con AWS DeepRacer Evo](https://github.com/aws-deepracer/aws-deepracer/blob/main/introduction-to-the-ros-navigation-stack-using-aws-deepracer-evo.md).
 
-## Run input node
-1. open docker container's terminal
-2. type `bash` command
-3. do the ROS sourcing by typing `source /opt/ros/jazzy/setup.bash`
-4. move to `cd /app/ros2_ws/src`
-5. type `colcon build --packages-select input_pkg --symlink-install` to build input package
-6. type `source install/setup.bash` to install
-7. type `ros2 run input_pkg input_node` to start the input node
+[in laboratorio] sono state effettuate varie sperimentazioni per l'utilizzo ed il controllo dell'aws deepracer.
+
+è stato configurato un container docker pronto per l'uso all'interno del quale è possibile lanciare una simulazione Gazebo + Rviz2 sviluppata ufficialmente da AWS. è possibile utilizzare il Dockerfile sviluppato da noi appositamente seguendo le istruzioni in [./aws-deepracer.md](./aws-deepracer.md).
+
+Inoltre è possibile creare un container interattivo all'interno del quale sperimentare le stesse funzionalità:
+
+```bash
+xhost +
+docker run -it --ipc=host --net=host --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix -v ~/.Xauthority:/root/.Xauthority -e XAUTHORITY=/root/.Xauthority osrf/ros:foxy-desktop bash
+sudo apt update
+
+sudo apt install ros-foxy-gazebo-ros-pkgs python3-rosinstall ros-foxy-rviz2
+
+mkdir -p deepracer_nav2_ws
+cd deepracer_nav2_ws
+git clone https://github.com/aws-deepracer/aws-deepracer.git
+
+rosdep install -i -r -y --from-paths .
+cd aws-deepracer
+rosinstall deepracer_description
+cd gazebo_ros2_control && git reset --hard 04b2c6f0ff0e977b6fc6af5dfc5e96e5bdd570d0 && cd ..
+
+colcon build
+
+cd environment/deepracer_nav2_ws/aws-deepracer
+export GAZEBO_RESOURCE_PATH=/usr/share/gazebo-11:{$GAZEBO_RESOURCE_PATH}
+source install/setup.bash
+
+# 1st terminal
+ros2 launch deepracer_bringup nav_amcl_demo_sim.launch.py
+
+# 2nd terminal
+rviz2
+```
+
+---
+
+> SALVI Luigi, SANTILIO Nicolo

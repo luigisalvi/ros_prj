@@ -1,0 +1,26 @@
+xhost + 
+docker run -it --ipc=host --net=host --gpus all -e DISPLAY=$DISPLAY -v /tmp/.X11-unix/:/tmp/.X11-unix -v ~/.Xauthority:/root/.Xauthority -e XAUTHORITY=/root/.Xauthority osrf/ros:foxy-desktop bash
+sudo apt update
+
+sudo apt install ros-foxy-gazebo-ros-pkgs python3-rosinstall ros-foxy-rviz2
+
+mkdir -p deepracer_nav2_ws
+cd deepracer_nav2_ws
+git clone https://github.com/aws-deepracer/aws-deepracer.git
+
+rosdep install -i -r -y --from-paths .
+cd aws-deepracer
+rosinstall deepracer_description
+cd gazebo_ros2_control && git reset --hard 04b2c6f0ff0e977b6fc6af5dfc5e96e5bdd570d0 && cd ..
+
+colcon build
+
+cd environment/deepracer_nav2_ws/aws-deepracer
+export GAZEBO_RESOURCE_PATH=/usr/share/gazebo-11:{$GAZEBO_RESOURCE_PATH}
+source install/setup.bash
+
+# 1st terminal
+ros2 launch deepracer_bringup nav_amcl_demo_sim.launch.py 
+
+# 2nd terminal
+rviz2
